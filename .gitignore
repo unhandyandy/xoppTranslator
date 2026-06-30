@@ -1,0 +1,13 @@
+# Ignore Xournal++ backup and recovery autosaves
+*~
+*.xopp~
+*.autosave.xopp
+
+# Ignore temporary logging or text capture assets
+*.txt
+*.png
+*.log
+
+# Ignore generic OS window configuration files
+.DS_Store
+Thumbs.db
