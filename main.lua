@@ -6,6 +6,9 @@ local browser="min"
 -- local screenshotter="maim -s "
 local screenshotcmd="xfce4-screenshooter -r -s "
 
+local clipmanager = "xfce4-clipman"
+-- local clipmanaget = "clipboard-indicator"
+
 local tmpImage = "/tmp/xournalpp_ocr_temp.png"
 local tmpText = "/tmp/xournalpp_ocr_temp.txt"
 
@@ -71,60 +74,63 @@ end
     
 -- --- OPTION 2: TEXT SELECTION PIPELINE ---
 -- Load the lightweight pure-Lua library from your folder
-local json = require("json")
+local getClipboardText
+if clipmanager=="clipboard-indicator" then
+   local json = require("json")
 
-function getClipboardText()
-    local path = os.getenv("HOME") .. "/.cache/clipboard-indicator@tudmotu.com/registry.txt"
-    local file,err = io.open(path, "r")
-    
-    if file then
-        local raw_json_string = file:read("*a")
-        file:close()
-        
-        -- Use pcall to parse the string safely without risking app crashes
-        local success, parsed_array = pcall(json.decode, raw_json_string)
-        
-        if success and parsed_array and #parsed_array > 0 then
-            -- Grab the absolute last index from the clipboard tracking array
-            local latest_item = parsed_array[#parsed_array]
-            
-            -- Extract the content text string
-            return latest_item["contents"]
-        end
-    end
-    print(err)
-    return nil
-end
+   function getClipboardText()
+      local path = os.getenv("HOME") .. "/.cache/clipboard-indicator@tudmotu.com/registry.txt"
+      local file,err = io.open(path, "r")
+      
+      if file then
+	 local raw_json_string = file:read("*a")
+	 file:close()
+	 
+	 -- Use pcall to parse the string safely without risking app crashes
+	 local success, parsed_array = pcall(json.decode, raw_json_string)
+	 
+	 if success and parsed_array and #parsed_array > 0 then
+	    -- Grab the absolute last index from the clipboard tracking array
+	    local latest_item = parsed_array[#parsed_array]
+	    
+	    -- Extract the content text string
+	    return latest_item["contents"]
+	 end
+      end
+      print(err)
+      return nil
+   end
+elseif clipmanager=="xfce4-clipman" then
+   function getClipboardText()
+      local clipCache = os.getenv("HOME") .. "/.cache/xfce4/clipman/textsrc"
 
--- function getClipboardText()
---    local clipCache = os.getenv("HOME") .. "/.cache/xfce4/clipman/textsrc"
+      local file = io.open(clipCache, "r")
+      if file then
+	 local text = file:read("*a")
+	 file:close()
+	 text = string.gsub(text, "[%s;]*$", "")
+	 text = string.match(text, ".*[^\\];%s*(.-)%s*$") or text
+	 print("\n--- DEBUG text  ---\n" .. text .. "\n----------------------\n")
+	 return text
+      end
+   end
 
---    local file = io.open(clipCache, "r")
---    if file then
---       local text = file:read("*a")
---       file:close()
---       text = string.gsub(text, "[%s;]*$", "")
---       text = string.match(text, ".*[^\\];%s*(.-)%s*$") or text
---       print("\n--- DEBUG text  ---\n" .. text .. "\n----------------------\n")
---       return text
---    end
-
-
-function translateClipboardText()
-   local text = getClipboardText()
-   print("\n--- DEBUG text  ---\n" .. text .. "\n----------------------\n")
-   
--- 2. Clean up newlines and URL-encode natively
-   local encoded = cleanAndEncode(text)
-   print("\n--- DEBUG encoded  ---\n" .. encoded .. "\n----------------------\n")
-   
-   -- 3. Open directly in your default system browser if text exists
-   if encoded and encoded ~= "" then
-      url = " \"https://google.com/search?q=translate:+"..encoded.."\" & "
-      print("\n--- DEBUG URL  ---\n" .. url .. "\n----------------------\n")
-      os.execute(browser..url)
-      -- os.execute("xdg-open 'https://google.com" .. encoded .. "' &")
-   else
-      print("Warning: Clipboard is empty or contains non-text data.")
+   function translateClipboardText()
+      local text = getClipboardText()
+      print("\n--- DEBUG text  ---\n" .. text .. "\n----------------------\n")
+      
+      -- 2. Clean up newlines and URL-encode natively
+      local encoded = cleanAndEncode(text)
+      print("\n--- DEBUG encoded  ---\n" .. encoded .. "\n----------------------\n")
+      
+      -- 3. Open directly in your default system browser if text exists
+      if encoded and encoded ~= "" then
+	 url = " \"https://google.com/search?q=translate:+"..encoded.."\" & "
+	 print("\n--- DEBUG URL  ---\n" .. url .. "\n----------------------\n")
+	 os.execute(browser..url)
+	 -- os.execute("xdg-open 'https://google.com" .. encoded .. "' &")
+      else
+	 print("Warning: Clipboard is empty or contains non-text data.")
+      end
    end
 end
