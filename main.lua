@@ -3,11 +3,11 @@ local browser="min"
 -- local browser="google-chrome"
 -- local browser="firefox"
 
-local screenshotter="maim -s "
--- local screenshotcmd="xfce4-screenshooter -r -s "
+-- local screenshotter="maim -s "
+local screenshotcmd="xfce4-screenshooter -r -s "
 
--- local clipmanager = "xfce4-clipman"
-local clipmanager = "clipboard-indicator"
+local clipmanager = "xfce4-clipman"
+-- local clipmanager = "clipboard-indicator"
 
 local tmpImage = "/tmp/xournalpp_ocr_temp.png"
 local tmpText = "/tmp/xournalpp_ocr_temp.txt"
@@ -16,16 +16,21 @@ local tmpText = "/tmp/xournalpp_ocr_temp.txt"
 function initUi()
    -- Option 1: Image Crop (Screenshots handwritten notes / diagrams)
    app.registerUi({
-	 ["menu"] = "Translate Image Crop (Google Lens)",
+	 ["menu"] = "Translate Image Crop",
 	 ["callback"] = "OCR_Google",
-	 ["accelerator"] = "<Shift><Alt>g"
+	 ["accelerator"] = "<Shift><Alt>i"
    })
 
    -- Option 2: Text Selection (Translates copied PDF text strings)
    app.registerUi({
-	 ["menu"] = "Translate Copied Text (Google Lens)",
+	 ["menu"] = "Translate Copied Text",
 	 ["callback"] = "translateClipboardText",
 	 ["accelerator"] = "<Shift><Alt>t"
+   })
+   app.registerUi({
+	 ["menu"] = "Query Copied Text",
+	 ["callback"] = "queryClipboardText",
+	 ["accelerator"] = "<Shift><Alt>q"
    })
 end
 
@@ -128,6 +133,25 @@ function translateClipboardText()
    -- 3. Open directly in your default system browser if text exists
    if encoded and encoded ~= "" then
       url = " \"https://google.com/search?q=translate:+"..encoded.."\" & "
+      print("\n--- DEBUG URL  ---\n" .. url .. "\n----------------------\n")
+      os.execute(browser..url)
+      -- os.execute("xdg-open 'https://google.com" .. encoded .. "' &")
+   else
+      print("Warning: Clipboard is empty or contains non-text data.")
+   end
+end
+
+function queryClipboardText()
+   local text = getClipboardText()
+   print("\n--- DEBUG text  ---\n" .. text .. "\n----------------------\n")
+   
+   -- 2. Clean up newlines and URL-encode natively
+   local encoded = cleanAndEncode(text)
+   print("\n--- DEBUG encoded  ---\n" .. encoded .. "\n----------------------\n")
+   
+   -- 3. Open directly in your default system browser if text exists
+   if encoded and encoded ~= "" then
+      url = " \"https://google.com/search?q="..encoded.."\" & "
       print("\n--- DEBUG URL  ---\n" .. url .. "\n----------------------\n")
       os.execute(browser..url)
       -- os.execute("xdg-open 'https://google.com" .. encoded .. "' &")
