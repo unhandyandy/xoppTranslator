@@ -13,6 +13,8 @@ which is then passed to the browser as above.
 
 You can set your preferred browser and screenshotter by editing the first few lines of main.lua.
 
+This requires a clipboard managet, like xfce4-clipman or clipboard-manager.  This is also set in the first few lines of main.lua.
+
 This is alpha level.  It was written with the help of Gemini.  
 I tried to avoid any unnecessary dependencies.
 
