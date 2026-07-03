@@ -11,9 +11,9 @@ Copy text into the clipboard, hit Shift-Alt t, and a browser opens with google's
 Hit Shift-Alt g, select a region, and tesseract is used to convert image to text, 
 which is then passed to the browser as above.
 
-You can set your preferred browser and screenshotter by editing the first few lines of main.lua.
+You can set your preferred browser and screenshotter by editing the prefs.lua file
 
-This requires a clipboard managet, like xfce4-clipman or clipboard-manager.  This is also set in the first few lines of main.lua.
+This requires a clipboard managet, like xfce4-clipman or clipboard-manager.  This is also set in the prefs.lua file.
 
 This is alpha level.  It was written with the help of Gemini.  
 I tried to avoid any unnecessary dependencies.
