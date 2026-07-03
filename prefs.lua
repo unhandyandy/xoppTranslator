@@ -1,12 +1,16 @@
-local browser="min"
--- local browser="google-chrome"
--- local browser="firefox"
+local prefs = {}
 
--- local screenshotter="maim -s "
-local screenshotcmd="xfce4-screenshooter -r -s "
+prefs.browser="min"
+-- prefs.browser="google-chrome"
+-- prefs.browser="firefox"
 
-local clipmanager = "xfce4-clipman"
--- local clipmanager = "clipboard-indicator"
+prefs.screenshotter="maim -s "
+-- prefs.screenshotcmd="xfce4-screenshooter -r -s "
 
-local tmpImage = "/tmp/xournalpp_ocr_temp.png"
-local tmpText = "/tmp/xournalpp_temp.txt"
+-- prefs.clipmanager = "xfce4-clipman"
+prefs.clipmanager = "clipboard-indicator"
+
+prefs.tmpImage = "/tmp/xournalpp_ocr_temp.png"
+prefs.tmpText = "/tmp/xournalpp_temp.txt"
+
+return prefs

@@ -1,4 +1,10 @@
-dofile("prefs.lua")
+local prefs = require("prefs")
+local browser = prefs.browser
+local screenshotter = prefs.screenshotter
+local clipmanager = prefs.clipmanager
+local tmpImage = prefs.tmpImage
+local tmpText = prefs.tmpText
+
 
 -- Register both tools into Xournal++'s interface loop
 function initUi()
