@@ -1,6 +1,6 @@
 local prefs = require("prefs")
 local browser = prefs.browser
-local screenshotter = prefs.screenshotter
+local screenshotcmd = prefs.screenshotcmd
 local clipmanager = prefs.clipmanager
 local tmpImage = prefs.tmpImage
 local tmpText = prefs.tmpText
@@ -49,7 +49,7 @@ function OCR_Google()
    -- Take regional screenshot and execute OCR via Tesseract
    local grabcmd = screenshotcmd .. tmpImage
    local ocrcmd = "tesseract " .. tmpImage .. " " .. string.sub(tmpText, 1, -5) .." > /dev/null 2>&1"
-   -- print("\n--- DEBUG grab  ---\n" .. grabcmd .. "\n----------------------\n")
+   print("\n--- DEBUG grab  ---\n" .. grabcmd .. "\n----------------------\n")
    os.execute(grabcmd)
    -- os.execute("feh "..tmpImage)
    -- print(os.execute("ls /tmp/xournalpp*"))
@@ -79,6 +79,7 @@ if clipmanager=="clipboard-indicator" then
    local json = require("json")
 
    function getClipboardText()
+      app.activateAction("copy")
       local path = os.getenv("HOME") .. "/.cache/clipboard-indicator@tudmotu.com/registry.txt"
       local file,err = io.open(path, "r")
       
@@ -102,6 +103,7 @@ if clipmanager=="clipboard-indicator" then
    end
 elseif clipmanager=="xfce4-clipman" then
    function getClipboardText()
+      app.activateAction("copy")
       local clipCache = os.getenv("HOME") .. "/.cache/xfce4/clipman/textsrc"
 
       local file = io.open(clipCache, "r")
